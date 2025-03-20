@@ -4,13 +4,13 @@
 show_help() {
     echo "Usage: $(basename $0) <replacement_text>"
     echo
-    echo "This script replaces all occurrences of 'xyz' with the provided replacement text"
+    echo "This script replaces all occurrences of 'akademieprotokolle-project/akademieprotokolle-entities' with the provided replacement text"
     echo "in all files within the current directory and subdirectories,"
     echo "excluding .git, venv directories and this script itself."
     echo "It also removes the usage section from README.md"
     echo
     echo "Arguments:"
-    echo "  replacement_text    The text that will replace 'xyz' in all files"
+    echo "  replacement_text    The text that will replace 'akademieprotokolle-project/akademieprotokolle-entities' in all files"
     echo
     echo "Example:"
     echo "  ./$(basename $0) new-project-name"
@@ -44,10 +44,10 @@ find . -type f \
     -not -path "./.git/*" \
     -not -path "./venv/*" \
     -not -name "$SCRIPT_NAME" \
-    -exec grep -l "xyz" {} \; | \
+    -exec grep -l "akademieprotokolle-project/akademieprotokolle-entities" {} \; | \
 while read file; do
     echo "Processing: $file"
-    sed -i "s@xyz@$REPLACEMENT@g" "$file"
+    sed -i "s@akademieprotokolle-project/akademieprotokolle-entities@$REPLACEMENT@g" "$file"
 done
 
-echo "Replacement complete: 'xyz' → '$REPLACEMENT'"
+echo "Replacement complete: 'akademieprotokolle-project/akademieprotokolle-entities' → '$REPLACEMENT'"

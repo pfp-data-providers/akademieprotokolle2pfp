@@ -1,53 +1,30 @@
 import os
 import requests
-from lxml.etree import Element
 from tqdm import tqdm
 from acdh_cidoc_pyutils import (
     make_e42_identifiers,
     make_appellations,
     coordinates_to_p168,
+    p89_falls_within
 )
 from acdh_cidoc_pyutils.namespaces import CIDOC
 from acdh_tei_pyutils.tei import TeiReader
 from acdh_tei_pyutils.utils import get_xmlid
-from acdh_xml_pyutils.xml import NSMAP
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF
 
 
-BASE_URL = "https://raw.githubusercontent.com/xyz-project/xyz-entities/refs/heads/main/indices/"  # noqa
-
-
-def p89_falls_within(
-    subj: URIRef,
-    node: Element,
-    domain: URIRef,
-    location_id_xpath="./tei:location[@type='located_in_place']/tei:placeName/@key",
-) -> Graph:
-    g = Graph()
-    try:
-        range_id = node.xpath(location_id_xpath, namespaces=NSMAP)[0]
-    except IndexError:
-        return g
-    range_uri = URIRef(f"{domain}{range_id}")
-    g.add((subj, CIDOC["P89_falls_within"], range_uri))
-    return g
+BASE_URL = "https://raw.githubusercontent.com/acdh-oeaw/akademie-data/refs/heads/main/data/indices/"  # noqa
 
 
 g = Graph()
-domain = "https://kaiserin-eleonora.oeaw.ac.at/"
+domain = "https://akademieprotokolle.acdh.oeaw.ac.at/"
 PU = Namespace(domain)
-
-if os.environ.get("NO_LIMIT"):
-    LIMIT = False
-    print("no limit")
-else:
-    LIMIT = False
 
 rdf_dir = "./datasets"
 os.makedirs(rdf_dir, exist_ok=True)
 entity_type = "place"
-index_file = f"./xyz-list{entity_type}.xml"
+index_file = f"./akademieprotokolle-list{entity_type}.xml"
 
 
 print("check if source file exists")
@@ -63,8 +40,6 @@ else:
 
 doc = TeiReader(index_file)
 items = doc.any_xpath(f".//tei:{entity_type}[@xml:id]")
-if LIMIT:
-    items = items[:LIMIT]
 
 for x in tqdm(items, total=len(items)):
     xml_id = get_xmlid(x)
@@ -92,6 +67,6 @@ for x in tqdm(items, total=len(items)):
     g += p89_falls_within(subj, x, f"{PU}")
 
 
-save_path = os.path.join(rdf_dir, f"xyz_{entity_type}.nt")
+save_path = os.path.join(rdf_dir, f"akademieprotokolle_{entity_type}.nt")
 print(f"saving graph as {save_path}")
 g.serialize(save_path, format="nt", encoding="utf-8")

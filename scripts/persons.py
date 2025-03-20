@@ -18,23 +18,16 @@ from rdflib.namespace import RDF
 
 
 g = Graph()
-domain = "https://kaiserin-eleonora.oeaw.ac.at/"
+domain = "https://akademieprotokolle.acdh.oeaw.ac.at/"
 PU = Namespace(domain)
-
-if os.environ.get("NO_LIMIT"):
-    LIMIT = False
-    print("no limit")
-else:
-    LIMIT = False
-
 rdf_dir = "./datasets"
 os.makedirs(rdf_dir, exist_ok=True)
 
-index_file = "./xyz-listperson.xml"
+index_file = "./akademieprotokolle-listperson.xml"
 entity_type = "person"
 
 print("check if source file exists")
-BASE_URL = "https://raw.githubusercontent.com/xyz-project/xyz-entities/refs/heads/main/indices/"  # noqa
+BASE_URL = "https://raw.githubusercontent.com/acdh-oeaw/akademie-data/refs/heads/main/data/indices/"  # noqa
 if os.path.exists(index_file):
     pass
 else:
@@ -47,9 +40,6 @@ else:
 
 doc = TeiReader(index_file)
 items = doc.any_xpath(f".//tei:{entity_type}[@xml:id]")
-if LIMIT:
-    items = items[:LIMIT]
-
 for x in tqdm(items, total=len(items)):
     xml_id = get_xmlid(x)
     item_label = make_entity_label(x.xpath(".//tei:persName[1]", namespaces=NSMAP)[0])[
@@ -84,7 +74,7 @@ for x in tqdm(items, total=len(items)):
     # birth
     try:
         x.xpath(".//tei:birth[./tei:date or ./tei:settlement]", namespaces=NSMAP)[0]
-        event_graph, birth_uri, birth_timestxyz = make_birth_death_entities(
+        event_graph, birth_uri, birth_timestakademieprotokolle = make_birth_death_entities(
             subj,
             x,
             f"{PU}",
@@ -101,7 +91,7 @@ for x in tqdm(items, total=len(items)):
     # death
     try:
         x.xpath(".//tei:death[./tei:date or ./tei:settlement]", namespaces=NSMAP)[0]
-        event_graph, death_uri, birth_timestxyz = make_birth_death_entities(
+        event_graph, death_uri, birth_timestakademieprotokolle = make_birth_death_entities(
             subj,
             x,
             f"{PU}",
@@ -116,8 +106,8 @@ for x in tqdm(items, total=len(items)):
         pass
 
     # occupations
-    g += make_occupations(subj, x, id_xpath="./@key")[0]
+    g += make_occupations(subj, x)[0]
 
-save_path = os.path.join(rdf_dir, f"xyz_{entity_type}.nt")
+save_path = os.path.join(rdf_dir, f"akademieprotokolle_{entity_type}.nt")
 print(f"saving graph as {save_path}")
 g.serialize(save_path, format="nt", encoding="utf-8")

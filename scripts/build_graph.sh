@@ -2,11 +2,10 @@
 
 echo "##############"
 DATA_DIR=datasets
-RDF_FILE=${DATA_DIR}/xyz.nt
+RDF_FILE=${DATA_DIR}/akademieprotokolle.nt
 export NO_LIMIT=1
 start_time=$(date +%s)
 
-python scripts/orgs.py
 python scripts/places.py
 python scripts/persons.py
 python scripts/finalize.py
