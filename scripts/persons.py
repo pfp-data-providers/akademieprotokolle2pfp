@@ -73,7 +73,7 @@ for x in tqdm(items, total=len(items)):
 
     # birth
     try:
-        x.xpath(".//tei:birth[./tei:date or ./tei:settlement]", namespaces=NSMAP)[0]
+        x.xpath(".//tei:birth[./tei:date[@when]]", namespaces=NSMAP)[0]
         event_graph, birth_uri, birth_timestakademieprotokolle = make_birth_death_entities(
             subj,
             x,
@@ -90,7 +90,7 @@ for x in tqdm(items, total=len(items)):
 
     # death
     try:
-        x.xpath(".//tei:death[./tei:date or ./tei:settlement]", namespaces=NSMAP)[0]
+        x.xpath(".//tei:death[./tei:date[@when]]", namespaces=NSMAP)[0]
         event_graph, death_uri, birth_timestakademieprotokolle = make_birth_death_entities(
             subj,
             x,
